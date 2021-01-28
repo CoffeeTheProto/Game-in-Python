@@ -1,5 +1,6 @@
 import math as m
 import random as r
+import drawTunnels as dT
 
 #Generate an enemy with random values relative to the player's stats
 def generateEnemy():
@@ -27,9 +28,43 @@ def checkLevel(exp):
         player["lvl"] += 1
         player["exp"] = extra
 
+#Generate a tunnel to draw with the turtle
+def generateTunnel():
+    gen = r.randint(1,3)
+    hall = ""
+    if gen == 1:
+        dT.hallL()
+        hall = "L"
+    elif gen == 2:
+        dT.hallR()
+        hall = "R"
+    elif gen == 3:
+        dT.hallT()
+        hall = "T"
+    
+    #Ask the player where they want to go, depending on the current generation
+    if hall == "T":
+        while True:
+            choice = input("Do you want to right or left? (R/L): ")
+            choice.lower()
+            if choice == "r" or choice == "l":
+                break
+            else:
+                print("Invalid input. Please try again.")
+        if choice == "r":
+            print("You walk right. You see a new tunnel.")
+        elif choice == "l":
+            print("You walk left. You see a new tunnel.")
+        randomEnemy = r.randint(1,5)
+        if randomEnemy == 5:
+            battle()
+
+        
+
 def battle():
     #Get the input to leave or stay in battle, and check it
     while True:
+        generateTunnel()
         choice = input("You have entered a battle. Roll for an attack. (y/n): ")
         choice.lower()
         if choice == "n":
@@ -75,7 +110,7 @@ def battle():
             while player["health"] < 0:
                 player["health"] += 10
             print(f"\nEnemy has done {enemy['attacks'][randomAttack - 1]} damage. \n-Your health: {player['health']} \n-Enemy health: {enemy['health']}")
-            print(f"player['name'] has died. Game Over.")
+            print(f"{player['name']} has died. Game Over.")
             return False
         print(f"\nEnemy has done {enemy['attacks'][randomAttack - 1]} damage. \n-Your health: {player['health']} \n-Enemy health: {enemy['health']}")
         #Ask the player if they want to continue
@@ -90,15 +125,18 @@ def battle():
             else:
                 print("Invalid input. Please try again.")
                 continue
-#Play the tutorial
-def tutorial():
-    print(f"Welcome, {player['name']}! In this tutorial, you will learn how to fight an enemy.")
-    if battle():
-        print(f"Congratulations {player['name']}! You have beat the tutorial. You can now progress to the rest of the game. Good luck!")
 
 #Create the player
 player = {}
 player["name"] = input("Please enter your character's name: ")
 player["lvl"], player["health"], player["exp"] = 1, 100, 0
 player["attacks"] = ((10 * r.randint(1,3)) + 10, (10 * r.randint(1,3)) + 10, (10 * r.randint(1,3)) + 10, (10 * r.randint(1,3)) + 10)
-tutorial()
+
+#Play the tutorial
+print(f"Welcome, {player['name']}! In this tutorial, you will learn how to fight an enemy.")
+dT.hallT()
+if battle():
+    print(f"Congratulations {player['name']}! You have beat the tutorial. You can now progress to the rest of the game. Good luck!")
+
+#Start the game
+generateTunnel()
